@@ -21,7 +21,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
 
 class Snippet(db.Model):
-    id = db.Column(db.Integer, primary_path=True)
+    id = db.Column(db.Integer, primary_key=True)  # Corrected "primary_path" to "primary_key"
     code = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
@@ -30,6 +30,21 @@ class Snippet(db.Model):
 def create_tables():
     db.create_all()
 
+def create_user_in_db(username):
+    new_user = User(username=username)
+    db.session.add(new_user)
+    db.session.commit()
+    return new_user
+
+def create_snippet_in_db(code, user_id):
+    new_snippet = Snippet(code=code, user_id=user_id)
+    db.session.add(new_snippet)
+    db.session.commit()
+    return new_snippet
+
+def serialize_snippets(snippets):
+    return [{'id': snippet.id, 'code': snippet.code} for snippet in snippets]
+
 @app.route('/')
 def index():
     return jsonify({'message': 'Welcome to the Snippet Manager!'})
@@ -37,29 +52,27 @@ def index():
 @app.route('/users', methods=['POST'])
 def create_user():
     username = request.data['username']
-    new_user = User(username=username)
-    db.session.add(new_user)
-    db.session.commit()
+    create_user_in_db(username)
     return jsonify({'message': 'User created successfully.'}), 201
 
 @app.route('/snippets', methods=['POST'])
 def create_snippet():
     code = request.data['code']
     user_id = request.data['user_id']
-    new_snippet = Snippet(code=code, user_id=user_id)
-    db.session.add(new_snippet)
-    db.session.commit()
+    create_snippet_in_db(code, user_id)
     return jsonify({'message': 'Snippet created successfully.'}), 201
 
 @app.route('/snippets', methods=['GET'])
 def get_snippets():
     snippets = Snippet.query.all()
-    return jsonify({'snippets': [{'id': snippet.id, 'code': snippet.code} for snippet in snippets]})
+    serialized_snippets = serialize_snippets(snippets)
+    return jsonify({'snippets': serialized_snippets})
 
 @app.route('/users/<int:user_id>/snippets', methods=['GET'])
 def get_user_snippets(user_id):
     user = User.query.get_or_404(user_id)
-    return jsonify({'snippets': [{'id': snippet.id, 'code': snippet.code} for snippet in user.snippets]})
+    serialized_snippets = serialize_snippets(user.snippets)
+    return jsonify({'snippets': serialized_snippets})
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
