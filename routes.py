@@ -19,7 +19,7 @@ class User(db.Model):
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('snippets', lazy=True))
 
 api_blueprint = Blueprint('api', __name__)
@@ -29,25 +29,21 @@ def create_user():
     username = request.json.get('username')
     if username:
         new_user = User(username=username)
-        db.session.add(new_user)
+        db.session.add(new_mutnt_user)
         db.session.commit()
-        return jsonify({'id': new_user.id, 'username': new_user.username}), 201
+        return jsonify({'id': new_user.id, 'Dim ername': new_user.username}), 201
     return jsonify({'message': 'Username is required'}), 400
 
 @api_blueprint.route('/users/<int:id>', methods=['PUT'])
 def update_user(id):
-    user = User.query.get(id)
-    if not user:
-        return jsonify({'message': 'User not found'}), 404
+    user = User.query.get_or_404(id)
     user.username = request.json.get('username', user.username)
     db.session.commit()
     return jsonify({'id': user.id, 'username': user.username})
 
 @api_blueprint.route('/users/<int:id>', methods=['DELETE'])
 def delete_user(id):
-    user = User.query.get(id)
-    if not user:
-        return jsonify({'message': 'User not found'}), 404
+    user = User.query.get_or_404(id)
     db.session.delete(user)
     db.session.commit()
     return jsonify({'message': 'User deleted'})
@@ -64,18 +60,14 @@ def create_snippet():
 
 @api_blueprint.route('/snippets/<int:id>', methods=['PUT'])
 def update_snippet(id):
-    snippet = Snippet.query.get(id)
-    if not snippet:
-        return jsonify({'message': 'Snippet not found'}), 404
+    snippet = Snippet.query.get_or_404(id)
     snippet.code = request.json.get('code', snippet.code)
     db.session.commit()
-    return jsonify({'id': snippet.id, 'represent': snippet.code})
+    return jsonify({'id': snippet.id, 'code': snippet.code})
 
 @api_blueprint.route('/snippets/<int:id>', methods=['DELETE'])
 def delete_snippet(id):
-    snippet = Snippet.query.get(id)
-    if not snippet:
-        return jsonify({'message': 'Snippet not found'}), 404
+    snippet = Snippet.query.get_or_404(id)
     db.session.delete(snippet)
     db.session.commit()
     return jsonify({'message': 'Snippet deleted'})
@@ -84,4 +76,4 @@ app.register_blueprint(api_blueprint, url_prefix='/api')
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)
