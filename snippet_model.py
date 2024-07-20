@@ -1,9 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
+from flask import Flask, jsonify
 
 load_dotenv()
 
+app = Flask(__name__)
 db = SQLAlchemy()
 
 class Snippet(db.Model):
@@ -19,9 +21,22 @@ class Snippet(db.Model):
     def __repr__(self):
         return f'<Snippet {self.title}>'
 
-db_uri = os.getenv("DATABASE_URL")
-if db_uri.startswith("postgres://"):
-    db_uri = db_uri.replace("postgres://", "postgresql://", 1)
-    
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-db.init_app(app)
+try:
+    db_uri = os.getenv("DATABASE_URL")
+    if db_uri:
+        if db_uri.startswith("postgres://"):
+            db_uri = db_uri.replace("postgres://", "postgresql://", 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    else:
+        raise ValueError("DATABASE_URL is not defined in .env file.")
+except ValueError as e:
+    print(e)  # Log the error appropriately for your set-up
+    # You might want to exit the app or handle this in a way that informs the user/admin.
+except Exception as e:
+    print(f"An error occurred: {e}")  # General catch-all for unexpected errors
+
+try:
+    db.init_app(app)
+except Exception as e:
+    print(f"An error occurred during SQLAlchemy initialization: {e}")
+    # Handle or log the initialization failure accordingly
