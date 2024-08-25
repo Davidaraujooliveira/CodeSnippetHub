@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Styles</title>
+  <style>
+    /* Basic Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    /* Basic styling for the entire application */
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    /* Header Styles */
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    /* Snippet Form Styles */
+    .snippet-form {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+    }
+    .snippet-form input[type="text"],
+    .snippet-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .snippet-form button {
+      width: 100%;
+      padding: 10px;
+      background: darkblue;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    /* Snippet List Styles */
+    .snippet-list {
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+    }
+    .snippet-list li {
+      border-bottom: 1px solid #eee;
+      padding: 10px;
+      list-style-type: none;
+    }
+    /* Snippet Details Styles */
+    .snippet-details {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    /* Search Results Styles */
+    .search-results {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      .snippet-form, .snippet-list, .snippet-details, .search-results {
+        padding: 10px;
+        margin: 10px;
+      }
+      header {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Application Header</h1>
+</header>
+
+<div class="snippet-form">
+  <form>
+    <input type="text" placeholder="Enter Title">
+    <textarea placeholder="Enter Snippet"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<ul class="snippet-list">
+  <li>Snippet 1</li>
+  <li>Snippet 2</li>
+  <!-- More snippets... -->
+</ul>
+
+<div class="snippet-details">
+  <h2>Snippet Title</h2>
+  <p>Snippet details...</p>
+</div>
+
+<div class="search-results">
+  <h2>Search Results</h2>
+  <!-- Search results... -->
+</div>
+
+</body>
+</html>
