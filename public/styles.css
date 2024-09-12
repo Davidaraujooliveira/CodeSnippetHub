@@ -11,27 +11,33 @@
       margin: 0;
       padding: 0;
     }
+    
     /* Basic styling for the entire application */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       padding: 20px;
-      background-color: #f4f4f4;
+      background-color: #f0f0f0;
+      color: #333;
     }
+    
     /* Header Styles */
     header {
-      background-color: #333;
-      color: #fff;
+      background-color: #007bff; /* Blue shade */
+      color: #ffffff;
       padding: 20px;
       text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+    
     /* Snippet Form Styles */
     .snippet-form {
       max-width: 700px;
       margin: 20px auto;
       padding: 20px;
-      background: #fff;
+      background: #ffffff;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .snippet-form input[type="text"],
     .snippet-form textarea {
@@ -39,45 +45,52 @@
       padding: 10px;
       margin: 10px 0;
       border-radius: 5px;
-      border: 1px solid #ddd;
+      border: 1px solid #cccccc;
     }
     .snippet-form button {
       width: 100%;
       padding: 10px;
-      background: darkblue;
+      background: #28a745; /* Green shade */
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
+    
     /* Snippet List Styles */
     .snippet-list {
       margin: 20px auto;
       padding: 20px;
-      background: #fff;
+      background: #ffffff;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .snippet-list li {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #eeeeee;
       padding: 10px;
       list-style-type: none;
     }
+    
     /* Snippet Details Styles */
     .snippet-details {
       max-width: 700px;
       margin: 20px auto;
-      background: #fff;
+      background: #ffffff;
       padding: 20px;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    
     /* Search Results Styles */
     .search-results {
       max-width: 700px;
       margin: 20px auto;
-      background: #fff;
+      background: #ffffff;
       padding: 20px;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    
     /* Responsive Design */
     @media (max-width: 768px) {
       body {
