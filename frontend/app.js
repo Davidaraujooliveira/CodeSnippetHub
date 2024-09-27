@@ -1,10 +1,11 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
-async function fetchSnippets() {
+async function fetchSnippets(page = 1, limit = 10) {
   try {
-    const response = await fetch(`${API_URL}/snippets`);
-    const data = await response.json();
+    const response = await fetch(`${API_URL}/snippets?page=${page}&limit=${limit}`);
+    const {data, totalPages} = await response.json();
     displaySnippets(data);
+    displayPagination(page, totalPages);
   } catch (error) {
     console.error("Fetching snippets failed:", error);
   }
@@ -69,6 +70,21 @@ function displaySnippets(snippets) {
     snippetElement.textContent = snippet.content;
     snippetsContainer.appendChild(snippetElement);
   });
+}
+
+function displayPagination(currentPage, totalPages) {
+  const paginationContainer = document.querySelector("#paginationContainer");
+  paginationContainer.innerHTML = '';
+
+  for (let page = 1; page <= totalPages; page++) {
+    const pageButton = document.createElement("button");
+    pageButton.textContent = page;
+    if (page === currentPage) {
+      pageButton.disabled = true;
+    }
+    pageButton.onclick = () => fetchSnippets(page);
+    paginationContainer.appendChild(pageButton);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
