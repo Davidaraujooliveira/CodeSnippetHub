@@ -1,16 +1,31 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function() {
+    let context = this, args = arguments;
+    let later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    let callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};
+
 async function fetchSnippets(page = 1, limit = 10) {
   try {
     const response = await fetch(`${API_URL}/snippets?page=${page}&limit=${limit}`);
-    if (!response.ok) { // Checking if the response status is OK
+    if (!response.ok) {
       throw new Error(`Error fetching snippets: ${response.statusText}`);
     }
     const { data, totalPages } = await response.json();
     displaySnippets(data);
     displayPagination(page, totalPages);
   } catch (error) {
-    console.error("Fetching snippets failed:", error);
+    displayError(error);
   }
 }
 
@@ -23,7 +38,7 @@ async function createSnippet(snippet) {
       },
       body: JSON.stringify(snippet),
     });
-    if (!response.ok) { // Error handling for POST request
+    if (!response.ok) {
       throw new Error(`Error creating snippet: ${response.statusText}`);
     }
     fetchSnippets();
@@ -41,12 +56,12 @@ async function updateSnippet(id, updatedSnippet) {
       },
       body: JSON.stringify(updatedSnippet),
     });
-    if (!response.ok) { // Added error handling for PUT request
+    if (!response.ok) {
       throw new Error(`Error updating snippet: ${response.statusText}`);
     }
     fetchSnippets();
   } catch (error) {
-    console.error("Updating snippet failed:", error);
+    displayError(error);
   }
 }
 
@@ -55,25 +70,28 @@ async function deleteSnippet(id) {
     const response = await fetch(`${API_URL}/snippets/${id}`, {
       method: 'DELETE',
     });
-    if (!response.ok) { // Error handling for DELETE request
+    if (!response.ok) {
       throw new Error(`Error deleting snippet: ${response.statusText}`);
     }
     fetchSnippets();
   } catch (error) {
-    console.error("Deleting snippet failed:", error);
+    displayError(error);
   }
 }
 
 async function searchSnippets(query) {
+  if (query.length < 3) {
+    return;
+  }
   try {
     const response = await fetch(`${API_URL}/snippets/search?query=${query}`);
-    if (!response.ok) { // Error handling for search request
+    if (!response.ok) {
       throw new Error(`Error searching snippets: ${response.statusText}`);
     }
     const data = await response.json();
     displaySnippets(data);
   } catch (error) {
-    console.error("Searching snippets failed:", error);
+    displayError(error);
   }
 }
 
@@ -102,6 +120,13 @@ function displayPagination(currentPage, totalPages) {
   }
 }
 
+function displayError(error) {
+  console.error("An error occurred:", error);
+  const errorContainer = document.querySelector("#errorContainer");
+  errorContainer.textContent = `An error occurred: ${error.message}`;
+  setTimeout(() => { errorContainer.textContent = ''; }, 5000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   fetchSnippets();
 
@@ -112,8 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const searchInput = document.querySelector("#searchInput");
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value;
-    searchSnippets(query);
-  });
+  const debouncedSearch = debounce(() => {
+    const query = searchInput.value.trim();
+    if (query) {
+      searchSnippets(query);
+    } else {
+      fetchSnippets();
+    }
+  }, 300);
+
+  searchInput.addEventListener("input", debouncedSearch);
 });
