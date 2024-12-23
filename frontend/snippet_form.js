@@ -10,6 +10,8 @@ const SnippetForm = ({ snippet = {}, onSave }) => {
     description: '',
   });
 
+  const [apiError, setApiError] = useState('');
+
   const [errors, setErrors] = useState([]);
 
   useEffect(() => {
@@ -34,21 +36,28 @@ const SnippetForm = ({ snippet = {}, onSave }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setApiError('');
 
     if (!validateForm()) return;
 
     try {
       const response = await fetch(`${API_ENDPOINT}`, {
-        method: snippet.id ? 'PUT' : 'POST', 
+        method: snippet.id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+        }),
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Network response was not ok');
+      }
 
       onSave();
     } catch (error) {
       console.error("Failed to save the snippet:", error);
+      setApiError(error.message);
     }
   };
 
@@ -59,7 +68,10 @@ const SnippetForm = ({ snippet = {}, onSave }) => {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      {errors.length > 0 && <ul>{errors.map((error, index) => <li key={index}>{error}</li>)}</ul>}
+      {errors.length > 0 && (
+        <ul>{errors.map((error, index) => <li key={index}>{error}</li>)}</ul>
+      )}
+      {apiError && <div className="api-error">{apiError}</div>}
       <div>
         <label htmlFor="title">Title:</label>
         <input type="text" id="title" name="title" value={formData.title} onChange={handleChange} required />
